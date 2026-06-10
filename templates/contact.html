@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto mt-10">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-6">
+    <div class="p-2 rounded-lg bg-sky-100 text-sky-600 shadow-sm">
+      <i data-lucide="mail" class="w-6 h-6"></i>
+    </div>
+    <h2 class="text-3xl font-bold text-slate-800">Contact Us</h2>
+  </div>
+
+  <!-- Card -->
+  <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+
+    <!-- Gradient Top Strip -->
+    <div class="h-2 w-full bg-gradient-to-r from-sky-500 via-teal-400 to-emerald-400"></div>
+
+    <!-- Form Area -->
+    <form method="post" action="{{ url_for('contact') }}" class="p-6 space-y-6">
+
+      <!-- NAME -->
+      <div class="group">
+        <label class="text-sm font-medium text-slate-700 mb-1 block">Your Name</label>
+        <input 
+          type="text"
+          name="name"
+          required
+          class="w-full rounded-md border border-slate-300 px-3 py-2
+                 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition
+                 shadow-sm bg-slate-50 hover:bg-white"
+        >
+      </div>
+
+      <!-- EMAIL -->
+      <div class="group">
+        <label class="text-sm font-medium text-slate-700 mb-1 block">Your Email</label>
+        <input 
+          type="email"
+          name="email"
+          required
+          class="w-full rounded-md border border-slate-300 px-3 py-2
+                 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition
+                 shadow-sm bg-slate-50 hover:bg-white"
+        >
+      </div>
+
+      <!-- SUBJECT -->
+      <div class="group">
+        <label class="text-sm font-medium text-slate-700 mb-1 block">Subject</label>
+        <input 
+          type="text"
+          name="subject"
+          required
+          class="w-full rounded-md border border-slate-300 px-3 py-2
+                 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition
+                 shadow-sm bg-slate-50 hover:bg-white"
+        >
+      </div>
+
+      <!-- MESSAGE -->
+      <div class="group">
+        <label class="text-sm font-medium text-slate-700 mb-1 block">Message</label>
+        <textarea 
+          name="message"
+          rows="5"
+          required
+          class="w-full rounded-md border border-slate-300 px-3 py-2
+                 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition
+                 shadow-sm bg-slate-50 hover:bg-white resize-none"
+        ></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit"
+        class="w-full flex items-center justify-center gap-2
+               bg-sky-600 hover:bg-sky-700 text-white font-semibold
+               py-3 rounded-md transition shadow-md hover:shadow-lg
+               hover:scale-[1.01] active:scale-[0.99]"
+      >
+        <i data-lucide="send" class="w-4 h-4"></i>
+        Send Message
+      </button>
+
+    </form>
+
+  </div>
+
+  <!-- Subtitle / Guidance -->
+  <p class="text-center text-slate-500 text-sm mt-4">
+    We usually respond within 24 hours 🚀
+  </p>
+</div>
+
+{% endblock %}

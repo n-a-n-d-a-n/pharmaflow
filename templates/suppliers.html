@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- PAGE HEADER -->
+<div class="mb-8">
+  <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+    <i data-lucide="truck" class="w-8 h-8 text-sky-600"></i>
+    Suppliers
+  </h2>
+</div>
+
+<!-- SEARCH + EXPORT -->
+<div class="flex flex-wrap items-center gap-3 mb-6">
+
+  <!-- Live Search -->
+  <div class="relative">
+    <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-3"></i>
+    <input id="liveSearch" type="text" placeholder="Search suppliers..."
+           class="pl-10 pr-3 py-2 w-80 border border-slate-300 rounded-lg shadow-sm
+                  focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition">
+  </div>
+
+  <!-- Export CSV -->
+  <button onclick="exportCSV()"
+          class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+    <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+  </button>
+
+</div>
+
+<!-- SUPPLIERS TABLE -->
+<div class="card rounded-xl shadow-sm border border-slate-200 p-6 bg-white">
+
+  <h3 class="text-xl font-semibold mb-4 flex items-center gap-2 border-b pb-3 text-slate-800">
+    <i data-lucide="list" class="w-5 h-5 text-teal-600"></i>
+    Supplier Directory
+  </h3>
+
+  <div class="overflow-x-auto">
+    <table id="supplierTable" class="min-w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+
+      <thead class="bg-slate-100 text-slate-600 uppercase tracking-wide select-none">
+        <tr>
+          <th class="px-4 py-3 text-left cursor-pointer" onclick="sortTable(0)">Name ⬍</th>
+          <th class="px-4 py-3 text-left cursor-pointer" onclick="sortTable(1)">Phone ⬍</th>
+          <th class="px-4 py-3 text-left cursor-pointer" onclick="sortTable(2)">Address ⬍</th>
+        </tr>
+      </thead>
+
+      <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
+
+        {% for s in suppliers %}
+        <tr class="hover:bg-slate-50 transition cursor-pointer"
+            onclick="openModal('{{ s.name }}','{{ s.contact_no }}','{{ s.address }}')">
+
+          <td class="px-4 py-3 font-medium text-slate-800">{{ s.name }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ s.contact_no or 'N/A' }}</td>
+          <td class="px-4 py-3 text-slate-600">{{ s.address }}</td>
+
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="flex justify-center mt-5 gap-2">
+    <button id="prevPage" class="px-3 py-1 border rounded hover:bg-slate-100"
+            onclick="changePage(-1)">Previous</button>
+
+    <span id="pageIndicator" class="px-3 py-1 text-slate-700 font-semibold"></span>
+
+    <button id="nextPage" class="px-3 py-1 border rounded hover:bg-slate-100"
+            onclick="changePage(1)">Next</button>
+  </div>
+
+</div>
+
+<!-- SUPPLIER DETAIL MODAL -->
+<div id="supplierModal" class="fixed inset-0 bg-black bg-opacity-40 hidden flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-xl p-6 w-96">
+    <h3 class="text-xl font-semibold text-slate-800 mb-3 flex items-center gap-2">
+      <i data-lucide="truck" class="w-5 h-5 text-sky-600"></i>
+      Supplier Details
+    </h3>
+
+    <p class="text-slate-700"><strong>Name:</strong> <span id="mName"></span></p>
+    <p class="text-slate-700"><strong>Phone:</strong> <span id="mPhone"></span></p>
+    <p class="text-slate-700"><strong>Address:</strong> <span id="mAddress"></span></p>
+
+    <button onclick="closeModal()"
+            class="mt-5 w-full bg-sky-600 hover:bg-sky-700 text-white py-2 rounded-lg">
+      Close
+    </button>
+  </div>
+</div>
+
+<!-- JAVASCRIPT LOGIC -->
+<script>
+
+  /* ✅ LIVE SEARCH */
+  document.getElementById("liveSearch").addEventListener("keyup", function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#tableBody tr");
+
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(filter) ? "" : "none";
+    });
+  });
+
+  /* ✅ SORTING */
+  function sortTable(col) {
+    const table = document.getElementById("supplierTable");
+    const rows = Array.from(table.rows).slice(1);
+    const tbody = document.getElementById("tableBody");
+
+    const sorted = rows.sort((a, b) => {
+      const v1 = a.cells[col].innerText.toLowerCase();
+      const v2 = b.cells[col].innerText.toLowerCase();
+      return v1.localeCompare(v2);
+    });
+
+    tbody.innerHTML = "";
+    sorted.forEach(r => tbody.appendChild(r));
+    updatePagination();
+  }
+
+  /* ✅ MODAL */
+  function openModal(name, phone, address) {
+    document.getElementById("mName").innerText = name;
+    document.getElementById("mPhone").innerText = phone;
+    document.getElementById("mAddress").innerText = address;
+    document.getElementById("supplierModal").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("supplierModal").classList.add("hidden");
+  }
+
+  /* ✅ PAGINATION */
+  let currentPage = 1;
+  const rowsPerPage = 8;
+
+  function updatePagination() {
+    const rows = document.querySelectorAll("#tableBody tr");
+    const totalRows = rows.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+    rows.forEach((row, i) => {
+      row.style.display = (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage)
+        ? ""
+        : "none";
+    });
+
+    document.getElementById("pageIndicator").innerText =
+      `Page ${currentPage} / ${totalPages}`;
+  }
+
+  updatePagination();
+
+  function changePage(step) {
+    const rows = document.querySelectorAll("#tableBody tr");
+    const maxPage = Math.ceil(rows.length / rowsPerPage);
+
+    currentPage = Math.max(1, Math.min(maxPage, currentPage + step));
+    updatePagination();
+  }
+
+  /* ✅ EXPORT CSV */
+  function exportCSV() {
+    const rows = document.querySelectorAll("#supplierTable tr");
+    let csv = [];
+
+    rows.forEach(row => {
+      const cols = [...row.cells].map(col => `"${col.innerText}"`);
+      csv.push(cols.join(","));
+    });
+
+    const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "suppliers.csv";
+    link.click();
+  }
+
+</script>
+
+{% endblock %}

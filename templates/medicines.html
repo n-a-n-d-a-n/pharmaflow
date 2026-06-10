@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- PAGE HEADER -->
+<div class="flex items-center justify-between mb-10">
+  <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+    <i data-lucide="pill" class="w-8 h-8 text-sky-600"></i>
+    Medicines
+  </h2>
+</div>
+
+<!-- FILTER CONTAINER -->
+<div class="bg-white border border-slate-300 shadow-md rounded-xl px-10 py-8 mb-10">
+
+  <!-- Title -->
+  <h3 class="text-xl font-semibold text-slate-700 mb-6 flex items-center gap-2">
+    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-sky-600"></i>
+    Filters
+  </h3>
+
+  <!-- FILTER FORM -->
+  <form method="get" class="grid md:grid-cols-3 gap-6">
+
+    <!-- Search -->
+    <div class="p-4 rounded-lg border border-slate-200 bg-slate-50">
+      <label class="block text-sm font-medium text-slate-600 mb-1">Search Medicine</label>
+      <input type="text" name="search" value="{{ search_term }}" placeholder="Search by name or category"
+             class="input w-full">
+    </div>
+
+    <!-- Category -->
+    <div class="p-4 rounded-lg border border-slate-200 bg-slate-50">
+      <label class="block text-sm font-medium text-slate-600 mb-1">Medicine Category</label>
+      <select name="category" class="input w-full">
+        <option value="">All Categories</option>
+        {% for c in categories %}
+          <option value="{{ c }}" {% if selected_category==c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Sort -->
+    <div class="p-4 rounded-lg border border-slate-200 bg-slate-50">
+      <label class="block text-sm font-medium text-slate-600 mb-1">Sort By</label>
+      <select name="sort" class="input w-full">
+        <option value="name_asc" {% if sort=='name_asc' %}selected{% endif %}>Name: A → Z</option>
+        <option value="name_desc" {% if sort=='name_desc' %}selected{% endif %}>Name: Z → A</option>
+
+        <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price: Low → High</option>
+        <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>Price: High → Low</option>
+
+        <option value="stock_asc" {% if sort=='stock_asc' %}selected{% endif %}>Stock: Low → High</option>
+        <option value="stock_desc" {% if sort=='stock_desc' %}selected{% endif %}>Stock: High → Low</option>
+
+        <option value="expiry_asc" {% if sort=='expiry_asc' %}selected{% endif %}>Expiry: Soonest First</option>
+        <option value="expiry_desc" {% if sort=='expiry_desc' %}selected{% endif %}>Expiry: Latest First</option>
+      </select>
+    </div>
+
+    <!-- Apply -->
+    <div class="md:col-span-3 flex justify-center">
+      <button class="btn-primary px-10 py-2 mt-2 flex items-center gap-2">
+        <i data-lucide="search" class="w-4 h-4"></i> Apply Filters
+      </button>
+    </div>
+
+  </form>
+
+</div>
+
+<!-- MEDICINES TABLE -->
+<div class="card border border-slate-200 shadow-md rounded-xl overflow-hidden">
+
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-100 text-slate-600 uppercase text-xs border-b border-slate-300">
+      <tr>
+        <th class="px-4 py-3 text-left">Name</th>
+        <th class="px-4 py-3 text-left">Category</th>
+        <th class="px-4 py-3 text-left">Price</th>
+        <th class="px-4 py-3 text-left">Expiry Date</th>
+        <th class="px-4 py-3 text-left">Status</th>
+        <th class="px-4 py-3 text-left">Stock</th>
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-slate-200 text-slate-700">
+
+      {% for m in medicines %}
+      {% set is_expired = m.expiry_date < current_date %}
+      {% set is_near = (m.expiry_date - current_date).days <= 30 and m.expiry_date >= current_date %}
+      {% set stock_status = 'Out of Stock' if m.stock == 0 else ('Low Stock' if m.stock < 10 else 'Available') %}
+
+      <tr class="hover:bg-slate-50 transition">
+
+        <td class="px-4 py-3 font-medium">{{ m.name }}</td>
+        <td class="px-4 py-3">{{ m.category }}</td>
+        <td class="px-4 py-3">₹{{ "%.2f"|format(m.price) }}</td>
+        <td class="px-4 py-3">{{ m.expiry_date.strftime("%Y-%m-%d") }}</td>
+
+        <!-- EXPIRY STATUS -->
+        <td class="px-4 py-3">
+          {% if is_expired %}
+            <span class="px-3 py-1 rounded-full text-xs bg-red-100 text-red-700 font-semibold">Expired</span>
+          {% elif is_near %}
+            <span class="px-3 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700 font-semibold">Near Expiry</span>
+          {% else %}
+            <span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-semibold">OK</span>
+          {% endif %}
+        </td>
+
+        <!-- STOCK STATUS -->
+        <td class="px-4 py-3">
+          {% if m.stock == 0 %}
+            <span class="px-3 py-1 rounded-full text-xs bg-red-100 text-red-700 font-semibold">Out of Stock</span>
+          {% elif m.stock < 10 %}
+            <span class="px-3 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700 font-semibold">Low Stock ({{ m.stock }})</span>
+          {% else %}
+            <span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-700 font-semibold">Available ({{ m.stock }})</span>
+          {% endif %}
+        </td>
+
+      </tr>
+      {% endfor %}
+
+      {% if medicines|length == 0 %}
+      <tr>
+        <td colspan="6" class="text-center py-6 text-slate-500">
+          No medicines match your filter.
+        </td>
+      </tr>
+      {% endif %}
+
+    </tbody>
+
+  </table>
+
+</div>
+
+{% endblock %}

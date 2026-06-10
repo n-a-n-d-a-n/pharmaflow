@@ -1,0 +1,60 @@
+/* static/style.css */
+/* Tailwind utility-friendly helpers and component classes */
+
+.nav-link {
+  @apply text-slate-700 hover:text-slate-900 transition text-sm;
+}
+
+.card {
+  @apply rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition;
+}
+
+.feature-card {
+  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition;
+}
+
+.icon-badge {
+  @apply inline-flex items-center justify-center h-8 w-8 rounded-md shadow-sm;
+}
+
+.btn-primary {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-br from-sky-600 to-teal-600 text-white shadow hover:opacity-90 transition;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-md bg-slate-800 text-white shadow hover:bg-slate-700 transition;
+}
+
+.btn-outline {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition;
+}
+
+.badge-red {
+  @apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs bg-red-100 text-red-700 border border-red-200;
+}
+.badge-amber {
+  @apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs bg-amber-100 text-amber-700 border border-amber-200;
+}
+.badge-teal {
+  @apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs bg-teal-100 text-teal-700 border border-teal-200;
+}
+
+.label {
+  @apply text-sm text-slate-600 mb-1;
+}
+.input {
+  @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-200 transition;
+}
+.form-field {
+  @apply flex flex-col;
+}
+
+.th {
+  @apply text-left px-4 py-2 font-medium;
+}
+.td {
+  @apply px-4 py-2;
+}
+
+/* Smooth hover for rows/cards */
+tr:hover, .card:hover { transition: all 150ms ease; }

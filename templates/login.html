@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-5xl mx-auto">
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-4">
+        {% for category, message in messages %}
+          <div class="p-3 rounded text-sm mb-2
+            {% if category == 'success' %} bg-green-100 text-green-800
+            {% elif category == 'error' %} bg-red-100 text-red-800
+            {% elif category == 'warning' %} bg-yellow-100 text-yellow-800
+            {% else %} bg-blue-100 text-blue-800 {% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="grid md:grid-cols-2 rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+
+    <!-- LEFT SECTION -->
+    <div class="relative p-10 bg-gradient-to-b from-slate-800 via-slate-900 to-black text-white">
+      <div class="max-w-md">
+
+        <!-- Icon -->
+        <div class="mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-500/20 ring-1 ring-white/10">
+          <i data-lucide="heart-pulse" class="w-7 h-7 text-sky-300"></i>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-3xl sm:text-4xl font-bold leading-tight">
+          Welcome to <span class="text-sky-300">PharmaFlow</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="mt-4 text-slate-300">
+          Secure and seamless pharmacy management for the modern healthcare workflow.
+        </p>
+
+        <!-- Highlights -->
+        <div class="mt-8 grid grid-cols-1 gap-4">
+          <div class="bg-white/5 rounded-xl p-4 ring-1 ring-white/10">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-sky-500/10">
+                <i data-lucide="shield-check" class="w-4 h-4 text-sky-300"></i>
+              </span>
+              <div>
+                <p class="text-sm font-medium">Secure Access</p>
+                <p class="text-xs text-slate-400">Only authorized users can log in.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/5 rounded-xl p-4 ring-1 ring-white/10">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500/10">
+                <i data-lucide="activity" class="w-4 h-4 text-emerald-300"></i>
+              </span>
+              <div>
+                <p class="text-sm font-medium">Reliable Workflow</p>
+                <p class="text-xs text-slate-400">Built for busy pharmacy operations.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Line FIXED -->
+      <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-300"></div>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="bg-white p-10">
+      <div class="max-w-md mx-auto">
+
+        <!-- Heading -->
+        <div class="flex items-center gap-2 mb-6">
+          <span class="icon-badge bg-sky-100 text-sky-600">
+            <i data-lucide="shield" class="w-4 h-4"></i>
+          </span>
+          <h2 class="text-2xl font-semibold text-slate-800">Sign In</h2>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" action="{{ url_for('login') }}" class="space-y-5">
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input 
+              type="email" 
+              name="email"
+              placeholder="admin@pharma.com"
+              required
+              class="w-full border border-slate-300 rounded-md px-3 py-2 bg-slate-50 text-slate-700 focus:ring-sky-500 focus:border-sky-500 outline-none"
+            >
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <div class="relative">
+              <input 
+                id="password"
+                type="password" 
+                name="password"
+                placeholder="••••••••"
+                required
+                class="w-full border border-slate-300 rounded-md px-3 py-2 bg-slate-50 text-slate-700 focus:ring-sky-500 focus:border-sky-500 outline-none"
+              >
+              <button type="button" id="togglePwd" 
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <button 
+            type="submit"
+            class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-md transition">
+            <i data-lucide="log-in" class="w-4 h-4 inline-block mr-1"></i>
+            Login
+          </button>
+
+        </form>
+
+        <!-- DEMO ACCOUNTS -->
+        <div class="mt-8 bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <p class="font-medium text-slate-700 mb-2 flex items-center gap-2">
+            <i data-lucide="info" class="w-4 h-4 text-sky-600"></i>
+            Demo Accounts
+          </p>
+
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li><span class="font-medium">Admin:</span> admin@pharma.com — <span class="text-slate-800">admin123</span></li>
+            <li><span class="font-medium">Pharmacist:</span> pharma@pharma.com — <span class="text-slate-800">pharma123</span></li>
+            <li><span class="font-medium">Doctor:</span> doctor@pharma.com — <span class="text-slate-800">doctor123</span></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- JS: Password Show/Hide -->
+<script>
+  const toggle = document.getElementById('togglePwd');
+  const pwd = document.getElementById('password');
+
+  toggle.addEventListener('click', () => {
+    const isHidden = pwd.type === "password";
+    pwd.type = isHidden ? "text" : "password";
+    toggle.innerHTML = isHidden
+      ? '<i data-lucide="eye-off" class="w-4 h-4"></i>'
+      : '<i data-lucide="eye" class="w-4 h-4"></i>';
+    if (window.lucide) window.lucide.createIcons();
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-8">
+  <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-2">
+    <i data-lucide="truck" class="w-7 h-7 text-sky-600"></i> Purchase Orders
+  </h2>
+</div>
+
+<div class="grid lg:grid-cols-3 gap-8">
+
+  <!-- LEFT SIDE — Purchase Orders List -->
+  <div class="lg:col-span-2">
+    <div class="card p-6 shadow-md rounded-xl border border-slate-200 bg-white">
+
+      <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 border-b pb-2">
+        <i data-lucide="list" class="w-5 h-5 text-teal-600"></i>
+        All Purchase Orders
+      </h3>
+
+      <div id="poAccordion" class="space-y-3">
+
+        {% for po in purchase_orders %}
+        <div class="accordion-item rounded-lg border border-slate-300 shadow-sm">
+
+          <!-- Header -->
+          <button type="button"
+                  class="w-full flex justify-between items-center px-5 py-4 bg-slate-50 hover:bg-slate-100 transition rounded-md text-left"
+                  onclick="toggleAccordion(this)">
+
+            <div class="space-y-0.5">
+              <p class="font-semibold text-slate-800">PO #{{ po.po_id }}</p>
+
+              <p class="text-xs text-slate-500 truncate max-w-xl">
+                <span class="font-medium">Supplier:</span> {{ po.supplier.name if po.supplier else 'Unknown' }}
+                &nbsp;|&nbsp;
+                <span class="font-medium">Date:</span> {{ po.date.strftime("%Y-%m-%d") }}
+                &nbsp;|&nbsp;
+                <span class="font-medium">Status:</span>
+                <span class="px-2 py-0.5 rounded-full text-xs
+                  {% if po.status == 'Pending' %} bg-yellow-100 text-yellow-700
+                  {% elif po.status == 'Received' %} bg-green-100 text-green-700
+                  {% else %} bg-red-100 text-red-700 {% endif %}">
+                  {{ po.status }}
+                </span>
+              </p>
+            </div>
+
+            <!-- Item Count Badge -->
+            <span class="flex items-center gap-1 bg-teal-100 text-teal-700 text-xs font-semibold px-3 py-1.5 rounded-full min-w-[40px] justify-center">
+              <i data-lucide="package" class="w-3 h-3"></i>
+              {{ po.items|length }}
+            </span>
+
+          </button>
+
+          <!-- Content -->
+          <div class="accordion-content hidden bg-white px-5 pb-5 pt-1">
+            <table class="min-w-full text-sm border border-slate-200 rounded-md overflow-hidden mt-3">
+              <thead class="bg-slate-100 text-slate-600">
+                <tr>
+                  <th class="px-3 py-2 text-left">Medicine</th>
+                  <th class="px-3 py-2 text-right">Qty</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for it in po.items %}
+                <tr>
+                  <td class="px-3 py-2">{{ it.medicine.name if it.medicine else 'Deleted' }}</td>
+                  <td class="px-3 py-2 text-right font-medium">{{ it.quantity }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            {% if session.get('user_role') in ['admin','pharmacist','inventory_manager'] %}
+            <form method="post" action="{{ url_for('update_po_status', po_id=po.po_id) }}" class="mt-3 flex gap-2">
+              <select name="status" class="input">
+                <option value="Pending" {% if po.status=='Pending' %}selected{% endif %}>Pending</option>
+                <option value="Received" {% if po.status=='Received' %}selected{% endif %}>Received</option>
+                <option value="Cancelled" {% if po.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+              </select>
+              <button type="submit" class="btn-primary">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Update
+              </button>
+            </form>
+            {% endif %}
+          </div>
+
+        </div>
+        {% endfor %}
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE — NEW PURCHASE ORDER FORM -->
+  <div>
+    <div class="card p-6 shadow-md rounded-xl border border-slate-200 bg-white">
+
+      <h3 class="text-lg font-semibold mb-6 flex items-center gap-2 border-b pb-3">
+        <i data-lucide="plus-circle" class="w-5 h-5 text-sky-600"></i>
+        New Purchase Order
+      </h3>
+
+      <form method="post" class="space-y-8">
+
+        <!-- Supplier Info -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-semibold text-slate-600 flex items-center gap-1">
+            <i data-lucide="truck" class="w-4 h-4 text-teal-600"></i>
+            Supplier Info
+          </h4>
+
+          <div class="form-field">
+            <label class="label">Supplier</label>
+            <select name="supplier_id" class="input w-full" required>
+              {% for s in suppliers %}
+              <option value="{{ s.supplier_id }}">{{ s.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label class="label">Date</label>
+            <input type="date" name="date" class="input w-full" value="{{ today.strftime('%Y-%m-%d') }}">
+          </div>
+        </div>
+
+        <!-- medicines section -->
+        <div class="space-y-4">
+          <h4 class="text-sm font-semibold text-slate-600 flex items-center gap-1">
+            <i data-lucide="pill" class="w-4 h-4 text-sky-600"></i>
+            Medicines
+          </h4>
+
+          <div id="poItemsContainer" class="space-y-4">
+
+            <!-- First item row -->
+            <div class="po-item-row bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+
+              <div>
+                <label class="label">Medicine</label>
+                <select name="item_medicine_id[]" class="input w-full" required>
+                  {% for m in medicines %}
+                  <option value="{{ m.medicine_id }}">{{ m.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div>
+                <label class="label">Quantity</label>
+                <input type="number" name="item_quantity[]" class="input w-full" min="1" value="10" required>
+              </div>
+
+              <div class="flex justify-end">
+                <button type="button" class="btn-outline text-xs px-3 py-2 flex items-center gap-1"
+                        onclick="removePoItemRow(this)">
+                  <i data-lucide="trash" class="w-4 h-4"></i> Remove
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <button type="button" class="btn-secondary w-full" onclick="addPoItemRow()">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add another medicine
+          </button>
+
+        </div>
+
+        <div class="pt-4 border-t border-slate-200">
+          <button type="submit" class="btn-primary w-full py-3">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            Create Purchase Order
+          </button>
+          <p class="text-xs text-slate-500 text-center">Stock updates apply when status is set to "Received".</p>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleAccordion(button) {
+    const item = button.closest('.accordion-item');
+    const content = item.querySelector('.accordion-content');
+    const all = document.querySelectorAll('#poAccordion .accordion-content');
+    all.forEach(c => { if (c !== content) c.classList.add('hidden'); });
+    content.classList.toggle('hidden');
+  }
+
+  function removePoItemRow(btn) {
+    btn.closest('.po-item-row').remove();
+  }
+
+  function addPoItemRow() {
+    const container = document.getElementById('poItemsContainer');
+    const row = document.createElement('div');
+
+    row.className = "po-item-row bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3";
+
+    row.innerHTML = `
+      <div>
+        <label class="label">Medicine</label>
+        <select name="item_medicine_id[]" class="input w-full" required>
+          {% for m in medicines %}
+          <option value="{{ m.medicine_id }}">{{ m.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="label">Quantity</label>
+        <input type="number" name="item_quantity[]" class="input w-full" min="1" value="10" required>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" class="btn-outline text-xs px-3 py-2 flex items-center gap-1"
+                onclick="removePoItemRow(this)">
+          <i data-lucide="trash" class="w-4 h-4"></i> Remove
+        </button>
+      </div>
+    `;
+
+    container.appendChild(row);
+  }
+</script>
+
+{% endblock %}

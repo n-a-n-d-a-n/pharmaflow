@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-3xl font-bold text-slate-800 mb-8 flex items-center gap-3">
+  <i data-lucide="sparkles" class="w-7 h-7 text-sky-600"></i>
+  Key Features
+</h2>
+
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+  <!-- Feature Card -->
+  <div class="p-6 rounded-xl border border-slate-200 shadow-sm bg-white hover:shadow-md transition">
+    <i data-lucide="pill" class="w-8 h-8 text-sky-600"></i>
+    <h3 class="font-semibold text-lg mt-3 text-slate-800">Stock management</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Track quantities, pricing, and categories with low-stock alerts.
+    </p>
+  </div>
+
+  <div class="p-6 rounded-xl border border-slate-200 shadow-sm bg-white hover:shadow-md transition">
+    <i data-lucide="clock" class="w-8 h-8 text-sky-600"></i>
+    <h3 class="font-semibold text-lg mt-3 text-slate-800">Expiry alerts</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Highlight items expiring within 30 days with badges.
+    </p>
+  </div>
+
+  <div class="p-6 rounded-xl border border-slate-200 shadow-sm bg-white hover:shadow-md transition">
+    <i data-lucide="file-text" class="w-8 h-8 text-sky-600"></i>
+    <h3 class="font-semibold text-lg mt-3 text-slate-800">Orders & prescriptions</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Create orders linked to customers and medicines.
+    </p>
+  </div>
+
+  <div class="p-6 rounded-xl border border-slate-200 shadow-sm bg-white hover:shadow-md transition">
+    <i data-lucide="truck" class="w-8 h-8 text-sky-600"></i>
+    <h3 class="font-semibold text-lg mt-3 text-slate-800">Supplier management</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Maintain supplier info for replenishment workflows.
+    </p>
+  </div>
+
+  <div class="p-6 rounded-xl border border-slate-200 shadow-sm bg-white hover:shadow-md transition">
+    <i data-lucide="users" class="w-8 h-8 text-sky-600"></i>
+    <h3 class="font-semibold text-lg mt-3 text-slate-800">Customer directory</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Search and view customer contact details easily.
+    </p>
+  </div>
+
+  <div class="p-6 rounded-xl border border-slate-200 shadow-sm bg-white hover:shadow-md transition">
+    <i data-lucide="shield-check" class="w-8 h-8 text-sky-600"></i>
+    <h3 class="font-semibold text-lg mt-3 text-slate-800">Role-based access</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Secure login with admin, pharmacist, and doctor roles.
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

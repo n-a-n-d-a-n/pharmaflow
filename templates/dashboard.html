@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="mb-8">
+  <h2 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+    <i data-lucide="bar-chart-3" class="w-8 h-8 text-sky-600"></i>
+    Analytics Dashboard
+  </h2>
+  <p class="mt-1 text-slate-500 text-sm">
+    Quick insights into orders, stock movement, and upcoming expiries.
+  </p>
+</div>
+
+<!-- Cards Grid -->
+<div class="grid lg:grid-cols-2 gap-6">
+
+  <!-- Monthly Sales -->
+  <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between px-5 pt-5">
+      <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+        <i data-lucide="calendar" class="w-5 h-5 text-indigo-600"></i>
+        Monthly Sales
+      </h3>
+    </div>
+    <div class="p-5">
+      <!-- Set a fixed height to allow responsive charts without layout shift -->
+      <div class="relative h-64 md:h-80">
+        <canvas id="salesChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top-Selling Medicines -->
+  <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between px-5 pt-5">
+      <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+        <i data-lucide="pill" class="w-5 h-5 text-emerald-600"></i>
+        Top-Selling Medicines
+      </h3>
+    </div>
+    <div class="p-5">
+      <div class="relative h-64 md:h-80">
+        <canvas id="topMedsChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Usage Trends -->
+  <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between px-5 pt-5">
+      <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+        <i data-lucide="boxes" class="w-5 h-5 text-amber-600"></i>
+        Stock Usage Trends
+      </h3>
+    </div>
+    <div class="p-5">
+      <div class="relative h-64 md:h-80">
+        <canvas id="stockChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expiry Heatmap -->
+  <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between px-5 pt-5">
+      <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+        <i data-lucide="clock" class="w-5 h-5 text-rose-600"></i>
+        Expiry Heatmap
+      </h3>
+    </div>
+    <div class="p-5">
+      <div class="relative h-64 md:h-80">
+        <canvas id="expiryChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Safely parse data from Jinja (fallback to empty arrays to avoid JS errors)
+  const salesLabels   = {{ (sales_labels   or [])|tojson|safe }};
+  const salesValues   = {{ (sales_values   or [])|tojson|safe }};
+  const topMedsLabels = {{ (top_meds_labels or [])|tojson|safe }};
+  const topMedsValues = {{ (top_meds_values or [])|tojson|safe }};
+  const stockLabels   = {{ (stock_labels   or [])|tojson|safe }};
+  const stockValues   = {{ (stock_values   or [])|tojson|safe }};
+  const expiryLabels  = {{ (expiry_labels  or [])|tojson|safe }};
+  const expiryValues  = {{ (expiry_values  or [])|tojson|safe }};
+
+  // Shared chart options for consistent UI
+  const baseOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { boxWidth: 12, color: '#0f172a', font: { size: 12 } }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+        titleColor: '#fff',
+        bodyColor: '#e2e8f0',
+        borderWidth: 0
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#475569' },
+        grid: { color: 'rgba(148, 163, 184, 0.15)' }
+      },
+      y: {
+        ticks: { color: '#475569', precision: 0 },
+        grid: { color: 'rgba(148, 163, 184, 0.15)' },
+        beginAtZero: true
+      }
+    }
+  };
+
+  // Ensure DOM elements exist before initializing charts
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sales (Line)
+    const salesCtx = document.getElementById('salesChart');
+    if (salesCtx) {
+      new Chart(salesCtx, {
+        type: 'line',
+        data: {
+          labels: salesLabels,
+          datasets: [{
+            label: 'Orders',
+            data: salesValues,
+            borderColor: 'rgb(37, 99, 235)',
+            backgroundColor: 'rgba(37, 99, 235, 0.18)',
+            fill: true,
+            tension: 0.35,
+            pointRadius: 2
+          }]
+        },
+        options: baseOptions
+      });
+    }
+
+    // Top Medicines (Bar)
+    const topCtx = document.getElementById('topMedsChart');
+    if (topCtx) {
+      new Chart(topCtx, {
+        type: 'bar',
+        data: {
+          labels: topMedsLabels,
+          datasets: [{
+            label: 'Units Sold',
+            data: topMedsValues,
+            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+            borderColor: 'rgb(5, 150, 105)',
+            borderWidth: 1,
+            maxBarThickness: 44
+          }]
+        },
+        options: baseOptions
+      });
+    }
+
+    // Stock Trends (Bar)
+    const stockCtx = document.getElementById('stockChart');
+    if (stockCtx) {
+      new Chart(stockCtx, {
+        type: 'bar',
+        data: {
+          labels: stockLabels,
+          datasets: [{
+            label: 'Stock Left',
+            data: stockValues,
+            backgroundColor: 'rgba(245, 158, 11, 0.85)',
+            borderColor: 'rgb(217, 119, 6)',
+            borderWidth: 1,
+            maxBarThickness: 44
+          }]
+        },
+        options: baseOptions
+      });
+    }
+
+    // Expiry Heatmap (Bar)
+    const expCtx = document.getElementById('expiryChart');
+    if (expCtx) {
+      new Chart(expCtx, {
+        type: 'bar',
+        data: {
+          labels: expiryLabels,
+          datasets: [{
+            label: 'Medicines Expiring',
+            data: expiryValues,
+            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+            borderColor: 'rgb(220, 38, 38)',
+            borderWidth: 1,
+            maxBarThickness: 44
+          }]
+        },
+        options: baseOptions
+      });
+    }
+  });
+</script>
+
+{% endblock %}

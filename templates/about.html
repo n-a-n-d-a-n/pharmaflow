@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Page Container -->
+<div class="max-w-6xl mx-auto px-6">
+
+  <!-- Header -->
+  <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center gap-3 mt-6">
+    <i data-lucide="info" class="w-7 h-7 text-sky-600"></i>
+    About the project
+  </h2>
+
+  <!-- Description -->
+  <p class="text-slate-600 text-lg leading-relaxed max-w-4xl ml-1 mb-10">
+    This application helps pharmacies manage inventories, orders, suppliers, and customer prescriptions.
+    It’s built with Flask, SQLAlchemy, and Tailwind CSS for a clean, efficient, and responsive user
+    experience.
+  </p>
+
+  <!-- Info Cards -->
+  <div class="grid md:grid-cols-3 gap-8">
+
+    <!-- Stack Card -->
+    <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center gap-3">
+        <i data-lucide="layers" class="w-7 h-7 text-sky-600"></i>
+        <p class="font-semibold text-lg text-slate-800">Stack</p>
+      </div>
+      <p class="text-sm text-slate-600 mt-2">
+        Flask • SQLAlchemy • Tailwind CSS • JavaScript
+      </p>
+    </div>
+
+    <!-- Design Card -->
+    <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center gap-3">
+        <i data-lucide="paintbrush" class="w-7 h-7 text-sky-600"></i>
+        <p class="font-semibold text-lg text-slate-800">Design</p>
+      </div>
+      <p class="text-sm text-slate-600 mt-2">
+        Soft blues, teals, and greens with smooth gradients and clean spacing.
+      </p>
+    </div>
+
+    <!-- Access Card -->
+    <div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+      <div class="flex items-center gap-3">
+        <i data-lucide="shield" class="w-7 h-7 text-sky-600"></i>
+        <p class="font-semibold text-lg text-slate-800">Access</p>
+      </div>
+      <p class="text-sm text-slate-600 mt-2">
+        Secure role-based access (admin, pharmacist, doctor).
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

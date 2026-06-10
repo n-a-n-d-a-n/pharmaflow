@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoice #{{ order.order_id }}</title>
+  <style>
+    @page { size: A4; margin: 20mm; }
+    body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; color: #222; }
+    .header { text-align: center; margin-bottom: 14px; }
+    .brand { font-size: 20px; font-weight: bold; margin: 0; }
+    .sub { font-size: 12px; color: #555; margin: 2px 0 0 0; }
+
+    .meta { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    .meta td { padding: 6px 8px; }
+    .meta .label { width: 110px; color: #555; }
+
+    h2 { font-size: 16px; margin: 18px 0 8px 0; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #f5f5f5; }
+    td.num { text-align: right; }
+
+    .totals { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .totals td { padding: 6px 8px; }
+    .label { text-align: right; }
+    .value { font-weight: bold; text-align: right; }
+
+    .muted { color: #666; }
+    .footer { margin-top: 20px; text-align: center; color: #777; font-size: 11px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <p class="brand">PharmaFlow Pharmacy</p>
+    <p class="sub">Invoice / Tax Invoice</p>
+  </div>
+
+  <table class="meta">
+    <tr>
+      <td class="label">Invoice No.</td>
+      <td>#{{ order.order_id }}</td>
+      <td class="label">Date</td>
+      <td>{{ order.date.strftime("%Y-%m-%d") }}</td>
+    </tr>
+    <tr>
+      <td class="label">Billed To</td>
+      <td>{{ order.customer.name }}</td>
+      <td class="label">Doctor</td>
+      <td>{{ order.doctor_name or "N/A" }}</td>
+    </tr>
+  </table>
+
+  <h2>Items</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Medicine</th>
+        <th>Category</th>
+        <th>Qty</th>
+        <th>Price (Rs.)</th>
+        <th>Total (Rs.)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>{{ it.name }}</td>
+        <td class="muted">{{ it.category }}</td>
+        <td class="num">{{ it.quantity }}</td>
+        <td class="num">{{ "%.2f"|format(it.price) }}</td>
+        <td class="num">{{ "%.2f"|format(it.total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr>
+      <td class="label" style="width:87%;">Grand Total (Rs.)</td>
+      <td class="value">{{ "%.2f"|format(grand_total) }}</td>
+    </tr>
+  </table>
+
+  <div class="footer">
+    Thank you for your purchase.  
+    This is a system-generated invoice; no signature required.
+  </div>
+
+</body>
+</html>
