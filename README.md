@@ -1,4 +1,4 @@
-# 💊 PharmaFlow — Pharmacy Inventory Management System
+# 💊 PharmaFlow - Pharmacy Inventory Management System
 
 A full-stack web application for managing pharmacy operations including medicines, customers, suppliers, sales orders, purchase orders, and staff access - built as a DBMS Project.
 
